@@ -178,8 +178,6 @@ COPY /y "$(GLEWDIR)\bin\Release\x64"\*.dll "$(TargetDir)"</Command>
     <ClCompile Include="ImagePPM.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Marker.cpp" />
-    <ClCompile Include="Mat.cpp" />
-    <ClCompile Include="MatPair.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Terrain.cpp" />
@@ -187,8 +185,6 @@ COPY /y "$(GLEWDIR)\bin\Release\x64"\*.dll "$(TargetDir)"</Command>
   <ItemGroup>
     <None Include="marker.frag" />
     <None Include="marker.vert" />
-    <None Include="Mat.inl" />
-    <None Include="MatPair.inl" />
     <None Include="pebbles-bump.ppm" />
     <None Include="pebbles-gloss.ppm" />
     <None Include="pebbles-norm.ppm" />
@@ -203,8 +199,6 @@ COPY /y "$(GLEWDIR)\bin\Release\x64"\*.dll "$(TargetDir)"</Command>
     <ClInclude Include="ImagePPM.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="Marker.hpp" />
-    <ClInclude Include="Mat.hpp" />
-    <ClInclude Include="MatPair.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="Terrain.hpp" />

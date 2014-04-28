@@ -3,8 +3,7 @@
 #ifndef Scene_hpp
 #define Scene_hpp
 
-#include "Vec.hpp"
-#include "MatPair.hpp"
+#include <glm/glm.hpp>
 
 class Marker;
 struct GLFWwindow;
@@ -19,15 +18,17 @@ private:
 // public data
 public:
     struct ShaderData {
-        MatPair4f viewmat, projection; // viewing matrices
-        Vec3f lightpos;		       // light position
+        //MatPair4f viewmat, projection; // viewing matrices
+		glm::mat4 viewMat, viewInverse;
+		glm::mat4 projectionMat, projectionInverse;
+        glm::vec3 lightpos;		       // light position
         int fog;		       // 1 = display fog, 0 = don't
     } sdata;
 
     int width, height;         // current window dimensions
 
-    Vec3f viewSph;          // view position in spherical coordinates
-    Vec3f lightSph;         // light position in spherical coordinates
+    glm::vec3 viewSph;          // view position in spherical coordinates
+    glm::vec3 lightSph;         // light position in spherical coordinates
 
 // public methods
 public:

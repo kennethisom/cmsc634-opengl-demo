@@ -6,12 +6,11 @@
 #include "AppContext.hpp"
 #include "Marker.hpp"
 
-#include "MatPair.inl"
-#include "Vec.inl"
-
 // using core modern OpenGL
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/matrix.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 // for offsetof
 #include <cstddef>
@@ -24,8 +23,8 @@
 // create and initialize view
 //
 Scene::Scene(GLFWwindow *win, Marker &lightmarker) : 
-    viewSph(vec3<float>(0.f, -1.4f, 500.f)),
-    lightSph(vec3<float>(0.5f * F_PI, 0.25f * F_PI, 300.f))
+    viewSph(glm::vec3(0.f, -80.5f, 500.f)),
+    lightSph(glm::vec3(F_PI/2.f, F_PI/4.f, 300.f)) // Light position is in radians.
 {
     // create uniform buffer objects
     glGenBuffers(NUM_BUFFERS, bufferIDs);
@@ -47,9 +46,13 @@ Scene::Scene(GLFWwindow *win, Marker &lightmarker) :
 void Scene::view()
 {
     // update view matrix
-    sdata.viewmat = translate4fp(vec3<float>(0,0,-viewSph.z)) 
-        * xrotate4fp(viewSph.y)
-        * zrotate4fp(viewSph.x);
+	sdata.viewMat = glm::mat4();
+	sdata.viewMat = glm::translate(sdata.viewMat, glm::vec3(0,0,-viewSph.z)); //translate4fp(vec3<float>(0,0,-viewSph.z)) 
+	sdata.viewMat = glm::rotate(sdata.viewMat, viewSph.y, glm::vec3(1.f, 0.f, 0.f));
+	sdata.viewMat = glm::rotate(sdata.viewMat, viewSph.x, glm::vec3(0.f, 0.f, 1.f));
+        //* xrotate4fp(viewSph.y)
+        //* zrotate4fp(viewSph.x);
+	sdata.viewInverse = glm::inverse(sdata.viewMat);
 }
 
 //
@@ -66,7 +69,8 @@ void Scene::viewport(GLFWwindow *win)
     glViewport(0, 0, width, height);
 
     // adjust 3D projection into this window
-    sdata.projection = perspective4fp(F_PI/4, (float)width/height, 1, 10000);
+    sdata.projectionMat = glm::perspective(45.f, (float)width/height, 1.f, 10000.f);
+	sdata.projectionInverse = glm::inverse(sdata.projectionMat);
 }
 
 
@@ -78,10 +82,11 @@ void Scene::light(Marker &lightmarker)
     // update position from spherical coordinates
     float cx = cos(lightSph.x), sx = sin(lightSph.x);
     float cy = cos(lightSph.y), sy = sin(lightSph.y);
-    sdata.lightpos = lightSph.z * vec3(cx*cy, sx*cy, sy);
+    sdata.lightpos = lightSph.z * glm::vec3(cx*cy, sx*cy, sy);
 
     // update marker position
-    lightmarker.updatePosition(sdata.lightpos);
+	glm::vec3 lpos(sdata.lightpos.x, sdata.lightpos.y, sdata.lightpos.z);
+    lightmarker.updatePosition(lpos);
 }
 
 

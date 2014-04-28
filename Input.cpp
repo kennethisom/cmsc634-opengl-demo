@@ -47,8 +47,8 @@ void Input::mouseMove(GLFWwindow *win, Scene *scene, double x, double y)
         float dy = float(y - oldY);
 
         // rotation angle, scaled so across the window = one rotation
-        scene->viewSph.x += F_PI * dx / float(scene->width);
-        scene->viewSph.y += 0.5f*F_PI * dy / float(scene->height);
+        scene->viewSph.x += 180 * dx / float(scene->width);
+        scene->viewSph.y += 90 * dy / float(scene->height);
         scene->view();
 
         // tell GLFW that something has changed and we must redraw
@@ -66,7 +66,7 @@ void Input::mouseMove(GLFWwindow *win, Scene *scene, double x, double y)
 //
 void Input::keyPress(GLFWwindow *win, int key, AppContext *appctx)
 {
-    switch (key) {
+    switch (key) { // Light position is in Radians
     case 'A':                   // rotate left
         panRate = -F_PI; // half a rotation/sec
         updateTime = glfwGetTime();

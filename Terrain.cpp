@@ -3,7 +3,6 @@
 #include "Terrain.hpp"
 #include "AppContext.hpp"
 #include "ImagePPM.hpp"
-#include "Vec.inl"
 
 // using core modern OpenGL
 #include <GL/glew.h>
@@ -29,25 +28,25 @@ Terrain::Terrain(const char *elevationPPM, const char *texturePPM,
     // load terrain heights
     ImagePPM elevation(elevationPPM);
     unsigned int w = elevation.width, h = elevation.height;
-    gridSize = vec3<float>(float(w), float(h), 255.f);
+    gridSize = glm::vec3(float(w), float(h), 255.f);
 
     // world dimensions
-    mapSize = vec3<float>(512, 512, 50);
+    mapSize = glm::vec3(512, 512, 50);
 
     // build vertex, normal and texture coordinate arrays
     // * x & y are the position in the terrain grid
     // * idx is the linear array index for each vertex
     numvert = (w + 1) * (h + 1);
-    vert = new Vec3f[numvert];
-    dPdu = new Vec3f[numvert];
-    dPdv = new Vec3f[numvert];
-    norm = new Vec3f[numvert];
-    texcoord = new Vec2f[numvert];
+    vert = new glm::vec3[numvert];
+    dPdu = new glm::vec3[numvert];
+    dPdv = new glm::vec3[numvert];
+    norm = new glm::vec3[numvert];
+    texcoord = new glm::vec2[numvert];
 
     for(unsigned int y=0, idx=0;  y <= h;  ++y) {
         for(unsigned int x=0;  x <= w;  ++idx, ++x) {
             // 3d vertex location: x,y from grid location, z from terrain data
-            vert[idx] = (vec3<float>(float(x), float(y), elevation(x%w, y%h).r)
+            vert[idx] = (glm::vec3(float(x), float(y), elevation(x%w, y%h).r)
                          / gridSize - 0.5f) * mapSize;
 
             // compute normal & tangents from partial derivatives:
@@ -73,12 +72,12 @@ Terrain::Terrain(const char *elevationPPM, const char *texturePPM,
                 * 0.5f * mapSize.z / gridSize.z;
 
             // final tangents and normal using these
-            dPdu[idx] = normalize(vec3<float>(mapSize.x/gridSize.x, 0, du));
-            dPdv[idx] = normalize(vec3<float>(0, mapSize.y/gridSize.y, dv));
-            norm[idx] = normalize(dPdu[idx] ^ dPdv[idx]);
+            dPdu[idx] = glm::normalize(glm::vec3(mapSize.x/gridSize.x, 0, du));
+            dPdv[idx] = glm::normalize(glm::vec3(0, mapSize.y/gridSize.y, dv));
+            norm[idx] = glm::normalize(glm::cross(dPdu[idx], dPdv[idx]));
 
             // 2D texture coordinate for rocks texture, from grid location
-            texcoord[idx] = vec2<float>(float(x),float(y)) / gridSize.xy;
+            texcoord[idx] = glm::vec2(float(x),float(y)) / gridSize.xy;
         }
     }
 
@@ -87,7 +86,7 @@ Terrain::Terrain(const char *elevationPPM, const char *texturePPM,
     // essentially its unfolded grid array position. Be careful that
     // each triangle ends up in counter-clockwise order
     numtri = 2*w*h;
-    indices = new Vec<unsigned int, 3>[numtri];
+    indices = new glm::uvec3[numtri];
     for(unsigned int y=0, idx=0; y<h; ++y) {
         for(unsigned int x=0; x<w; ++x, idx+=2) {
             indices[idx][0] = (w+1)* y    + x;
@@ -102,24 +101,24 @@ Terrain::Terrain(const char *elevationPPM, const char *texturePPM,
 
     // load vertex and index array to GPU
     glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[POSITION_BUFFER]);
-    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(Vec3f), vert, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(glm::vec3), vert, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[TANGENT_BUFFER]);
-    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(Vec3f), dPdu, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(glm::vec3), dPdu, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[BITANGENT_BUFFER]);
-    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(Vec3f), dPdv, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(glm::vec3), dPdv, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[NORMAL_BUFFER]);
-    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(Vec3f), norm, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(glm::vec3), norm, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[UV_BUFFER]);
-    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(Vec2f), texcoord, 
+    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(glm::vec2), texcoord, 
                  GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferIDs[INDEX_BUFFER]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
-                 numtri*sizeof(unsigned int[3]), indices, GL_STATIC_DRAW);
+                 numtri*sizeof(glm::uvec3), indices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

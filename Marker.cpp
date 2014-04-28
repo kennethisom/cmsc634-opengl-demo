@@ -2,12 +2,12 @@
 
 #include "Marker.hpp"
 #include "AppContext.hpp"
-#include "Vec.inl"
-#include "MatPair.inl"
 
 // using core modern OpenGL
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 
 //
@@ -21,31 +21,31 @@ Marker::Marker()
 
     // build vertex array = corners of an octahedron
     numvert = sizeof(vert)/sizeof(*vert);
-    vert[0] = vec3<float>( 10.f,  0.f,  0.f);
-    vert[1] = vec3<float>(-10.f,  0.f,  0.f);
-    vert[2] = vec3<float>(  0.f, 10.f,  0.f);
-    vert[3] = vec3<float>(  0.f,-10.f,  0.f);
-    vert[4] = vec3<float>(  0.f,  0.f, 10.f);
-    vert[5] = vec3<float>(  0.f,  0.f,-10.f);
+    vert[0] = glm::vec3( 10.f,  0.f,  0.f);
+    vert[1] = glm::vec3(-10.f,  0.f,  0.f);
+    vert[2] = glm::vec3(  0.f, 10.f,  0.f);
+    vert[3] = glm::vec3(  0.f,-10.f,  0.f);
+    vert[4] = glm::vec3(  0.f,  0.f, 10.f);
+    vert[5] = glm::vec3(  0.f,  0.f,-10.f);
 
     // build index array linking sets of three vertices into triangles
     numtri = sizeof(indices)/sizeof(*indices);
-    indices[0] = vec3<unsigned int>(0, 2, 4);
-    indices[1] = vec3<unsigned int>(0, 4, 3);
-    indices[2] = vec3<unsigned int>(0, 3, 5);
-    indices[3] = vec3<unsigned int>(0, 5, 2);
-    indices[4] = vec3<unsigned int>(1, 4, 2);
-    indices[5] = vec3<unsigned int>(1, 2, 5);
-    indices[6] = vec3<unsigned int>(1, 5, 3);
-    indices[7] = vec3<unsigned int>(1, 3, 4);
+    indices[0] = glm::uvec3(0, 2, 4);
+    indices[1] = glm::uvec3(0, 4, 3);
+    indices[2] = glm::uvec3(0, 3, 5);
+    indices[3] = glm::uvec3(0, 5, 2);
+    indices[4] = glm::uvec3(1, 4, 2);
+    indices[5] = glm::uvec3(1, 2, 5);
+    indices[6] = glm::uvec3(1, 5, 3);
+    indices[7] = glm::uvec3(1, 3, 4);
 
     // load vertex and index array to GPU
     glBindBuffer(GL_ARRAY_BUFFER, bufferIDs[POSITION_BUFFER]);
-    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(Vec3f), vert, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, numvert*sizeof(glm::vec3), vert, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferIDs[INDEX_BUFFER]);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 
-                 numtri*sizeof(unsigned int[3]), indices, GL_STATIC_DRAW);
+                 numtri*sizeof(glm::uvec3), indices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -108,9 +108,10 @@ void Marker::updateShaders()
 
 //
 // update marker position
-void Marker::updatePosition(const Vec3f &center)
+void Marker::updatePosition(const glm::vec3 &center)
 {
-    mdata.modelmat = translate4fp(center);
+    mdata.viewMat = glm::translate(glm::mat4(), center);
+	mdata.viewInverse = glm::inverse(mdata.viewMat);
 }
 
 //

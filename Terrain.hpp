@@ -2,24 +2,26 @@
 #ifndef Terrain_hpp
 #define Terrain_hpp
 
-#include "Vec.hpp"
+#define GLM_SWIZZLE
+
 #include "Shader.hpp"
+#include <glm/glm.hpp>
 
 // terrain data and rendering methods
 class Terrain {
 // private data
 private:
-    Vec3f gridSize;             // elevation grid size
-    Vec3f mapSize;              // size of terrain in world space
+    glm::vec3 gridSize;             // elevation grid size
+    glm::vec3 mapSize;              // size of terrain in world space
 
     unsigned int numvert;       // total vertices
-    Vec3f *vert;                // per-vertex position
-    Vec3f *dPdu, *dPdv;         // per-vertex tangents
-    Vec3f *norm;                // per-vertex normal
-    Vec2f *texcoord;            // per-vertex texture coordinate
+    glm::vec3 *vert;                // per-vertex position
+    glm::vec3 *dPdu, *dPdv;         // per-vertex tangents
+    glm::vec3 *norm;                // per-vertex normal
+    glm::vec2 *texcoord;            // per-vertex texture coordinate
     
     unsigned int numtri;        // total triangles
-    Vec<unsigned int, 3> *indices; // 3 vertex indices per triangle
+    glm::uvec3 *indices; // 3 vertex indices per triangle
 
     // GL vertex array object IDs
     unsigned int varrayID;
