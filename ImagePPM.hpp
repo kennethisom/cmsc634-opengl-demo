@@ -2,10 +2,10 @@
 #ifndef ImagePPM_hpp
 #define ImagePPM_hpp
 
-#include "Vec.hpp"
+#include <glm/glm.hpp>
 
 struct ImagePPM {
-    typedef Vec3c color_type;
+	typedef glm::detail::tvec3<unsigned char, glm::precision::highp> color_type;
 
     unsigned int width, height; // image size
     color_type *image;          // image data in [y][x][color] order

@@ -192,7 +192,6 @@ COPY /y "$(GLEWDIR)\bin\Release\x64"\*.dll "$(TargetDir)"</Command>
     <None Include="terrain.frag" />
     <None Include="terrain.ppm" />
     <None Include="terrain.vert" />
-    <None Include="Vec.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppContext.hpp" />
@@ -202,7 +201,6 @@ COPY /y "$(GLEWDIR)\bin\Release\x64"\*.dll "$(TargetDir)"</Command>
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="Terrain.hpp" />
-    <ClInclude Include="Vec.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
